@@ -18,11 +18,14 @@ tagsRouter.get("/", async(req,res)=>{
 tagsRouter.get('/:tagName/posts', async (req, res, next) => {
     // read the tagname from the params
     const tag = req.params.tagName
-    
+    console.log(tag)
     try {
-        const post = await getPostsByTagName(tag)
-
-        res.send({posts: post})
+        const allPost = await getPostsByTagName(tag)
+        console.log(allPost)
+const manyPost = allPost.filter(post => {
+return post.active || (req.user && post.author.id === req.user.id) 
+})
+        res.send({posts: manyPost})
       // use our method to get posts by tag name from the db
       // send out an object to the client { posts: // the posts }
     } catch ({ name, message }) {

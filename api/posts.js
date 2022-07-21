@@ -11,13 +11,21 @@ postsRouter.use((req, res, next) => {
     next(); // THIS IS DIFFERENT
   });
   
+  postsRouter.get('/', async (req, res, next) => {
+    try {
+      const allPosts = await getAllPosts();
   
-  postsRouter.get('/', async (req, res) => {
-    const posts = await getAllPosts();
-    console.log (posts)
-    res.send({
-      posts
-    });
+      const posts = allPosts.filter(post => {
+        // keep a post if it is either active, or if it belongs to the current user
+        return post.active || (req.user && post.author.id === req.user.id);
+      });
+  
+      res.send({
+        posts
+      });
+    } catch ({ name, message }) {
+      next({ name, message });
+    }
   });
 
   postsRouter.post('/', requireUser, async (req, res, next) => {
